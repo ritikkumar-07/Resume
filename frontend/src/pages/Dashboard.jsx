@@ -1,45 +1,130 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, FileText, MoreVertical, Copy, Trash2, Download, Loader2 } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
+import { useResumeStore } from '../store/resumeStore';
 
-const formats = [
-  { id: 1, name: 'Classic Minimal', desc: 'Standard formal layout for traditional industry roles.' },
-  { id: 2, name: 'Modern Executive', desc: 'Clean layout emphasizing header highlights and key technical skills.' },
-  { id: 3, name: 'Tech Engineer', desc: 'Structured grid focusing on software projects, GitHub, and tech stacks.' },
-  { id: 4, name: 'Corporate Elite', desc: 'Symmetrical design tailored for management and corporate positions.' },
-  { id: 5, name: 'Creative Designer', desc: 'Spacious typographical setup for visual and design portfolios.' },
-  { id: 6, name: 'Academic Standard', desc: 'Text-dense layout optimized for publications, education, and credentials.' },
-  { id: 7, name: 'Compact One-Page', desc: 'High-density layout engineered to fit extensive data onto a single page.' },
-  { id: 8, name: 'Minimalist Line', desc: 'Divider line driven structure emphasizing timeline chronology.' },
-  { id: 9, name: 'Startup Professional', desc: 'Dynamic design highlighting impact, links, and project achievements.' },
-  { id: 10, name: 'Software Developer', desc: 'Clean developer layout with prominent GitHub and LinkedIn fields.' }
-];
+export default function Dashboard() {
+  const { user } = useAuthStore();
+  const { resumes, fetchResumes, createResume, deleteResume, duplicateResume, isLoading } = useResumeStore();
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const navigate = useNavigate();
 
-export default function Dashboard({ onSelectFormat }) {
+  useEffect(() => {
+    fetchResumes();
+  }, [fetchResumes]);
+
+  const handleCreate = async () => {
+    setIsCreating(true);
+    const newResume = await createResume('Untitled Resume', 'Minimal');
+    setIsCreating(false);
+    if (newResume) {
+      navigate(`/builder/${newResume.id}`);
+    }
+  };
+
+  const handleDuplicate = async (id) => {
+    setMenuOpen(null);
+    await duplicateResume(id);
+  };
+
+  const handleDelete = async (id) => {
+    setMenuOpen(null);
+    if (confirm('Are you sure you want to delete this resume?')) {
+      await deleteResume(id);
+    }
+  };
+
   return (
-    <div className="max-w-7xl mx-auto py-10 px-6">
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-serif font-bold text-cream-900">Choose a Resume Format</h1>
-        <p className="text-cream-800 text-sm mt-2">Select from 10 production formats to build your resume.</p>
+    <div className="max-w-7xl mx-auto w-full py-10 px-6">
+      <div className="flex justify-between items-end mb-10">
+        <div>
+          <h1 className="text-3xl font-serif font-bold text-cream-900 mb-2">Welcome back, {user?.name?.split(' ')[0]}</h1>
+          <p className="text-cream-800">You have {resumes.length} {resumes.length === 1 ? 'resume' : 'resumes'} in your workspace.</p>
+        </div>
+        <button 
+          onClick={handleCreate} 
+          disabled={isCreating}
+          className="bg-cream-900 text-white px-5 py-3 rounded-xl font-medium hover:bg-cream-800 transition-colors flex items-center gap-2 disabled:opacity-70"
+        >
+          {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+          Create New Resume
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {formats.map((fmt) => (
-          <div key={fmt.id} className="bg-white border border-cream-200 rounded-2xl p-5 shadow-sm hover:border-cream-300 transition-all flex flex-col justify-between">
-            <div>
-              <div className="h-36 bg-cream-100 rounded-xl mb-4 border border-cream-200 flex items-center justify-center text-cream-800 font-serif text-sm italic font-semibold">
-                Format #{fmt.id} Preview
-              </div>
-              <h3 className="text-base font-serif font-bold text-cream-900 mb-1">{fmt.name}</h3>
-              <p className="text-cream-800 text-xs mb-4">{fmt.desc}</p>
-            </div>
-            <button 
-              onClick={() => onSelectFormat(fmt.id)}
-              className="w-full bg-cream-900 hover:bg-cream-800 text-white font-medium py-2 rounded-xl transition-colors text-xs"
-            >
-              Use Format #{fmt.id}
-            </button>
+      {isLoading && resumes.length === 0 ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-cream-800" />
+        </div>
+      ) : resumes.length === 0 ? (
+        <div className="bg-white border border-cream-200 rounded-2xl p-16 text-center shadow-sm">
+          <div className="w-20 h-20 bg-cream-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <FileText className="w-10 h-10 text-cream-800" />
           </div>
-        ))}
-      </div>
+          <h2 className="text-xl font-bold text-cream-900 mb-2">No resumes yet</h2>
+          <p className="text-cream-800 max-w-md mx-auto mb-8">
+            Create your first professional resume and start building your career story.
+          </p>
+          <button onClick={handleCreate} className="bg-cream-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-cream-800 transition-colors">
+            Create Your First Resume
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {resumes.map((resume) => (
+            <div key={resume.id} className="bg-white border border-cream-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all relative group">
+              <div 
+                className="h-48 bg-cream-50 border-b border-cream-200 cursor-pointer flex items-center justify-center p-4 relative"
+                onClick={() => navigate(`/builder/${resume.id}`)}
+              >
+                {/* Mini Preview Mock */}
+                <div className="w-full h-full bg-white shadow-sm border border-cream-200 rounded p-3 overflow-hidden">
+                   <div className="w-1/2 h-2 bg-cream-300 rounded mb-4 mx-auto"></div>
+                   <div className="w-3/4 h-1.5 bg-cream-200 rounded mb-2"></div>
+                   <div className="w-full h-1.5 bg-cream-200 rounded mb-2"></div>
+                   <div className="w-5/6 h-1.5 bg-cream-200 rounded mb-2"></div>
+                </div>
+                
+                <div className="absolute inset-0 bg-cream-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="bg-white text-cream-900 px-4 py-2 rounded-lg font-medium shadow-sm text-sm">Edit Resume</span>
+                </div>
+              </div>
+              
+              <div className="p-5 flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold text-cream-900 truncate pr-2">{resume.title}</h3>
+                  <p className="text-xs text-cream-800 mt-1">Template: {resume.template}</p>
+                  <p className="text-[10px] text-cream-500 mt-2">Edited {new Date(resume.updatedAt).toLocaleDateString()}</p>
+                </div>
+                
+                <div className="relative">
+                  <button 
+                    onClick={() => setMenuOpen(menuOpen === resume.id ? null : resume.id)}
+                    className="p-1.5 text-cream-800 hover:bg-cream-100 rounded-lg transition-colors"
+                  >
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                  
+                  {menuOpen === resume.id && (
+                    <div className="absolute right-0 top-10 w-40 bg-white border border-cream-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+                      <button onClick={() => navigate(`/builder/${resume.id}`)} className="w-full text-left px-4 py-2 text-sm text-cream-900 hover:bg-cream-50 flex items-center gap-2">
+                        <FileText className="w-4 h-4" /> Edit
+                      </button>
+                      <button onClick={() => handleDuplicate(resume.id)} className="w-full text-left px-4 py-2 text-sm text-cream-900 hover:bg-cream-50 flex items-center gap-2">
+                        <Copy className="w-4 h-4" /> Duplicate
+                      </button>
+                      <button onClick={() => handleDelete(resume.id)} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 border-t border-cream-100">
+                        <Trash2 className="w-4 h-4" /> Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
