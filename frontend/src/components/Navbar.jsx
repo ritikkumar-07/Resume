@@ -10,13 +10,9 @@ export default function Navbar({ user, onLogout }) {
       {user ? (
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-3 bg-white border border-cream-200 px-4 py-1.5 rounded-full shadow-sm">
-            {user.avatar ? (
-              <img src={user.avatar} alt="User Avatar" className="w-7 h-7 rounded-full border border-cream-200" />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-cream-300 flex items-center justify-center font-bold text-xs text-cream-900">
-                {user.name?.charAt(0)}
-              </div>
-            )}
+            <div className="w-7 h-7 rounded-full bg-cream-300 flex items-center justify-center font-bold text-xs text-cream-900">
+              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
             <span className="text-sm font-medium text-cream-900">{user.name}</span>
           </div>
           <button 
@@ -27,7 +23,7 @@ export default function Navbar({ user, onLogout }) {
           </button>
         </div>
       ) : (
-        <span className="text-xs text-cream-800 font-medium">Please sign in to build your resume</span>
+        <span className="text-xs text-cream-800 font-medium">Welcome, Visitor</span>
       )}
     </nav>
   );

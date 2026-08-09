@@ -1,27 +1,22 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
+const mongoose = require('mongoose');
 const cors = require('cors');
-
-require('./config/passport');
 
 const app = express();
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
+// MongoDB Database Connection
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/resumebuilder')
+  .then(() => console.log('MongoDB Database Connected Successfully'))
+  .catch((err) => console.error('MongoDB Connection Failed:', err));
 
-app.use(passport.initialize());
-app.use(passport.session());
-
+// Routes
 app.use('/api/auth', require('./routes/auth'));
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Backend server running on http://localhost:${process.env.PORT || 5000}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Backend Express Server running on port ${PORT}`);
 });

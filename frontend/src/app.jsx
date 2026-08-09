@@ -1,30 +1,25 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Login from './pages/Login';
+import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
-import Builder from './pages/Builder';
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [selectedFormat, setSelectedFormat] = useState(null);
 
   const handleLogout = () => {
     setUser(null);
-    setSelectedFormat(null);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-cream-50 font-sans">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2]">
       <Navbar user={user} onLogout={handleLogout} />
 
       <main className="flex-grow">
         {!user ? (
-          <Login />
-        ) : !selectedFormat ? (
-          <Dashboard onSelectFormat={(fmt) => setSelectedFormat(fmt)} />
+          <AuthPage onAuthSuccess={(userData) => setUser(userData)} />
         ) : (
-          <Builder templateId={selectedFormat} onBack={() => setSelectedFormat(null)} />
+          <Dashboard user={user} />
         )}
       </main>
 
