@@ -2,11 +2,11 @@ import React from 'react';
 
 export default function Login() {
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = 'http://10.143.83.40:5001/api/auth/google';
   };
 
   const handleMicrosoftLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/microsoft';
+    window.location.href = 'http://10.143.83.40:5001/api/auth/microsoft';
   };
 
   return (

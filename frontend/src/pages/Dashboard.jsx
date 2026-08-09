@@ -1,12 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, FileText, MoreVertical, Copy, Trash2, Download, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  FileText,
+  MoreVertical,
+  Copy,
+  Trash2,
+  Download,
+  Loader2,
+  Eye,
+  Edit3
+} from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useResumeStore } from '../store/resumeStore';
 
 export default function Dashboard() {
   const { user } = useAuthStore();
-  const { resumes, fetchResumes, createResume, deleteResume, duplicateResume, isLoading } = useResumeStore();
+  const {
+    resumes,
+    fetchResumes,
+    createResume,
+    updateResume,
+    deleteResume,
+    duplicateResume,
+    isLoading
+  } = useResumeStore();
   const [menuOpen, setMenuOpen] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
@@ -36,6 +54,35 @@ export default function Dashboard() {
     }
   };
 
+  const handleView = (id) => {
+  setMenuOpen(null);
+  navigate(`/builder/${id}?view=true`);
+};
+
+const handleRename = async (resume) => {
+  setMenuOpen(null);
+
+  const newTitle = window.prompt(
+    'Enter a new name for your resume:',
+    resume.title
+  );
+
+  if (!newTitle) return;
+
+  const trimmedTitle = newTitle.trim();
+
+  if (!trimmedTitle) {
+    alert('Resume name cannot be empty.');
+    return;
+  }
+
+  if (trimmedTitle === resume.title) return;
+
+  await useResumeStore.getState().updateResume(resume.id, {
+    title: trimmedTitle
+  });
+};
+
   return (
     <div className="max-w-7xl mx-auto w-full py-10 px-6">
       <div className="flex justify-between items-end mb-10">
@@ -46,7 +93,7 @@ export default function Dashboard() {
         <button 
           onClick={handleCreate} 
           disabled={isCreating}
-          className="bg-cream-900 text-white px-5 py-3 rounded-xl font-medium hover:bg-cream-800 transition-colors flex items-center gap-2 disabled:opacity-70"
+          className="bg-[#2F2B28] text-white px-5 py-3 rounded-xl font-medium border border-[#2F2B28] hover:bg-black hover:border-black transition-colors flex items-center gap-2 disabled:opacity-70"
         >
           {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
           Create New Resume
@@ -66,14 +113,17 @@ export default function Dashboard() {
           <p className="text-cream-800 max-w-md mx-auto mb-8">
             Create your first professional resume and start building your career story.
           </p>
-          <button onClick={handleCreate} className="bg-cream-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-cream-800 transition-colors">
+          <button onClick={handleCreate} className="bg-[#2F2B28] text-white px-6 py-3 rounded-xl font-medium border border-[#2F2B28] hover:bg-black hover:border-black transition-colors">
             Create Your First Resume
           </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {resumes.map((resume) => (
-            <div key={resume.id} className="bg-white border border-cream-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all relative group">
+            <div
+  key={resume.id}
+  className="bg-white border border-cream-200 rounded-2xl overflow-visible shadow-sm hover:shadow-md transition-all relative group"
+>
               <div 
                 className="h-48 bg-cream-50 border-b border-cream-200 cursor-pointer flex items-center justify-center p-4 relative"
                 onClick={() => navigate(`/builder/${resume.id}`)}
@@ -106,19 +156,50 @@ export default function Dashboard() {
                     <MoreVertical className="w-5 h-5" />
                   </button>
                   
-                  {menuOpen === resume.id && (
-                    <div className="absolute right-0 top-10 w-40 bg-white border border-cream-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
-                      <button onClick={() => navigate(`/builder/${resume.id}`)} className="w-full text-left px-4 py-2 text-sm text-cream-900 hover:bg-cream-50 flex items-center gap-2">
-                        <FileText className="w-4 h-4" /> Edit
-                      </button>
-                      <button onClick={() => handleDuplicate(resume.id)} className="w-full text-left px-4 py-2 text-sm text-cream-900 hover:bg-cream-50 flex items-center gap-2">
-                        <Copy className="w-4 h-4" /> Duplicate
-                      </button>
-                      <button onClick={() => handleDelete(resume.id)} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 border-t border-cream-100">
-                        <Trash2 className="w-4 h-4" /> Delete
-                      </button>
-                    </div>
-                  )}
+{menuOpen === resume.id && (
+  <div className="absolute right-0 top-10 w-44 bg-white border border-[#D8D2CC] rounded-xl shadow-xl z-50 py-1 overflow-hidden">
+
+    {/* Edit */}
+    <button
+      onClick={() => {
+        setMenuOpen(null);
+        navigate(`/builder/${resume.id}`);
+      }}
+      className="w-full text-left px-4 py-2.5 text-sm text-[#1F1C1A] hover:bg-[#F5F1EA] flex items-center gap-3 transition-colors"
+    >
+      <Edit3 className="w-4 h-4" />
+      <span>Edit</span>
+    </button>
+
+    {/* View */}
+    <button
+      onClick={() => handleView(resume.id)}
+      className="w-full text-left px-4 py-2.5 text-sm text-[#1F1C1A] hover:bg-[#F5F1EA] flex items-center gap-3 transition-colors"
+    >
+      <Eye className="w-4 h-4" />
+      <span>View</span>
+    </button>
+
+    {/* Rename */}
+    <button
+      onClick={() => handleRename(resume)}
+      className="w-full text-left px-4 py-2.5 text-sm text-[#1F1C1A] hover:bg-[#F5F1EA] flex items-center gap-3 transition-colors"
+    >
+      <FileText className="w-4 h-4" />
+      <span>Rename</span>
+    </button>
+
+    {/* Delete */}
+    <button
+      onClick={() => handleDelete(resume.id)}
+      className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 border-t border-[#E5E0DA] transition-colors"
+    >
+      <Trash2 className="w-4 h-4" />
+      <span>Delete</span>
+    </button>
+
+  </div>
+)}
                 </div>
               </div>
             </div>

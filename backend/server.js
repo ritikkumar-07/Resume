@@ -8,8 +8,16 @@ const resumeRoutes = require('./routes/resume');
 
 const app = express();
 
+// app.use(cors({
+//   origin: process.env.CLIENT_URL || 'http://localhost:5173',
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'http://10.143.83.40:5173'
+  ],
   credentials: true
 }));
 
@@ -29,8 +37,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
+const PORT = process.env.PORT || 5001;
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend Express Server running on port ${PORT}`);
 });
 

@@ -11,6 +11,7 @@ import Minimal from '../components/templates/Minimal';
 import Executive from '../components/templates/Executive';
 import ModernCreative from '../components/templates/ModernCreative';
 
+
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 const defaultData = {
@@ -114,11 +115,59 @@ export default function Builder() {
     return <Minimal data={data} />;
   }, [template, data]);
 
-  const downloadPDF = () => {
-    if (!previewRef.current) return;
-    const filename = `${(data.personal.fullName || 'Resume').replace(/[^a-z0-9]+/gi, '_')}.pdf`;
-    html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'] } }).from(previewRef.current).save();
+
+const downloadPDF = async () => {
+  const element = document.querySelector(".resume-page");
+
+  if (!element) {
+    console.error("Resume preview not found");
+    return;
+  }
+
+  const options = {
+    margin: 0,
+
+    filename: "Ritik_Kumar_Resume.pdf",
+
+    image: {
+      type: "jpeg",
+      quality: 0.98,
+    },
+
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
+    },
+
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
+      compress: true,
+    },
+
+    pagebreak: {
+      mode: ["css", "legacy"],
+      avoid: [
+        ".resume-section",
+        ".resume-entry",
+        ".project-entry",
+      ],
+    },
   };
+
+  await html2pdf()
+    .set(options)
+    .from(element)
+    .save();
+};
 
   const downloadDocx = async () => {
     const p = data.personal;

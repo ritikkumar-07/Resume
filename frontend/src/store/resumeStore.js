@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL: 'http://10.143.83.40:5001/api',
   withCredentials: true
 });
 
@@ -33,16 +33,40 @@ export const useResumeStore = create((set, get) => ({
   },
 
   createResume: async (title, template) => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await api.post('/resumes', { title, template });
-      set((state) => ({ resumes: [res.data.resume, ...state.resumes], isLoading: false }));
-      return res.data.resume;
-    } catch (error) {
-      set({ error: 'Failed to create resume', isLoading: false });
-      return null;
-    }
-  },
+  set({ isLoading: true, error: null });
+
+  try {
+    console.log('Creating resume...');
+    console.log('API URL:', 'http://10.143.83.40:5001/api/resumes');
+
+    const res = await api.post('/resumes', {
+      title,
+      template
+    });
+
+    console.log('Create Resume Response:', res.data);
+
+    set((state) => ({
+      resumes: [res.data.resume, ...state.resumes],
+      isLoading: false,
+      error: null
+    }));
+
+    return res.data.resume;
+
+  } catch (error) {
+    console.error('CREATE RESUME ERROR:', error);
+    console.error('Response:', error.response?.data);
+    console.error('Status:', error.response?.status);
+
+    set({
+      error: error.response?.data?.message || 'Failed to create resume',
+      isLoading: false
+    });
+
+    return null;
+  }
+},
 
   updateResume: async (id, data) => {
     try {

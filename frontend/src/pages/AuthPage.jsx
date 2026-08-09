@@ -106,9 +106,15 @@ export default function AuthPage({ type = 'login' }) {
             </div>
           )}
 
-          <button disabled={isLoading} type="submit" className="w-full py-3 mt-4 bg-cream-900 text-white rounded-xl font-medium hover:bg-cream-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
-            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isLogin ? 'Sign In' : 'Create Account'}
+          <button
+            disabled={isLoading}
+            type="submit"
+            className="w-full h-14 mt-4 bg-[#2F2B28] !text-white rounded-xl font-semibold hover:bg-[#1F1C1A] transition-all duration-200 flex items-center justify-center gap-2 border border-[#2F2B28] shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isLoading && <Loader2 className="w-4 h-4 text-white animate-spin" />}
+            <span className="text-white">
+              {isLogin ? 'Sign In' : 'Create Account'}
+            </span>
           </button>
         </form>
 

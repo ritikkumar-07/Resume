@@ -30,11 +30,18 @@ export default function Landing() {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/register" className="w-full sm:w-auto px-8 py-4 bg-cream-900 text-white rounded-xl font-medium text-lg hover:bg-cream-800 transition-all shadow-soft hover:shadow-lg flex items-center justify-center gap-2">
+          <Link
+            to="/register"
+            className="w-full sm:w-auto px-8 py-4 bg-cream-900 text-[#1f1c1a] border border-[#2F2B28] rounded-xl font-medium text-lg hover:bg-cream-800 transition-all shadow-soft hover:shadow-lg flex items-center justify-center gap-2"
+          >
             <FileText className="w-5 h-5" />
             Create My Resume
           </Link>
-          <Link to="/templates" className="w-full sm:w-auto px-8 py-4 bg-white text-cream-900 border border-cream-200 rounded-xl font-medium text-lg hover:bg-cream-50 transition-all shadow-sm flex items-center justify-center gap-2">
+
+          <Link
+            to="/templates"
+            className="w-full sm:w-auto px-8 py-4 bg-white text-cream-900 border border-cream-200 rounded-xl font-medium text-lg hover:bg-cream-50 transition-all shadow-sm flex items-center justify-center gap-2"
+          >
             <Layout className="w-5 h-5" />
             Explore Templates
           </Link>
