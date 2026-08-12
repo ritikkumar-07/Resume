@@ -1,0 +1,451 @@
+.resume-preview-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+  background: #f3f1ed;
+}
+
+/* Exact A4 ratio */
+.resume-page {
+  --resume-scale: 1;
+
+  width: 210mm;
+  height: 297mm;
+
+  background: #ffffff;
+  color: #111111;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  position: relative;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.10);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: calc(9.4pt * var(--resume-scale));
+
+  line-height: calc(1.25 * var(--resume-scale));
+
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/*
+  Everything inside uses EM units.
+  This allows the entire resume to automatically
+  become larger or smaller while keeping proportions.
+*/
+
+.resume-content {
+  width: 100%;
+  min-height: 100%;
+
+  box-sizing: border-box;
+
+  padding:
+    calc(15mm * var(--resume-scale))
+    calc(16mm * var(--resume-scale))
+    calc(12mm * var(--resume-scale));
+
+  overflow: hidden;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.resume-header {
+  text-align: center;
+
+  margin-bottom:
+    calc(0.65em * var(--resume-scale));
+}
+
+.resume-header h1 {
+  margin: 0;
+
+  font-size:
+    calc(23pt * var(--resume-scale));
+
+  line-height: 1;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2px;
+
+  color: #111111;
+}
+
+.resume-title {
+  margin-top:
+    calc(0.28em * var(--resume-scale));
+
+  font-size:
+    calc(10.5pt * var(--resume-scale));
+
+  font-weight: 600;
+}
+
+/* .contact-line {
+  display: flex;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap:
+    calc(0.35em * var(--resume-scale));
+
+  margin-top:
+    calc(0.28em * var(--resume-scale));
+
+  font-size:
+    calc(8.3pt * var(--resume-scale));
+
+  line-height: 1.2;
+} */
+
+.contact-line {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  flex-wrap: nowrap;
+
+  gap: calc(0.35em * var(--resume-scale));
+
+  margin-top: calc(0.28em * var(--resume-scale));
+
+  font-size: calc(8.3pt * var(--resume-scale));
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+.contact-line span {
+  white-space: nowrap;
+}
+
+.contact-line span:not(:last-child)::after {
+  content: "|";
+
+  margin-left: calc(0.35em * var(--resume-scale));
+
+  color: #555;
+}
+
+
+
+/* =========================
+   SECTION
+========================= */
+
+/* .resume-section {
+  margin-top:
+    calc(0.65em * var(--resume-scale));
+
+  break-inside: avoid;
+  page-break-inside: avoid;
+} */
+
+.resume-section {
+  margin-top: 0.65em;
+
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* .resume-section h2 {
+  margin: 0 0
+    calc(0.42em * var(--resume-scale));
+
+  padding-bottom:
+    calc(0.18em * var(--resume-scale));
+
+  border-bottom: 1px solid #222;
+
+  font-size:
+    calc(10.2pt * var(--resume-scale));
+
+  line-height: 1.1;
+
+  font-weight: 800;
+
+  letter-spacing: 0.25px;
+
+  color: #111111;
+} */
+
+.resume-section h2 {
+  position: relative;
+
+  margin: 0 0 0.65em;
+  padding: 0 0 0.35em;
+
+  border-bottom: none;
+
+  font-size: calc(10.2pt * var(--resume-scale));
+  line-height: 1.2;
+
+  font-weight: 800;
+  letter-spacing: 0.25px;
+  border-bottom: none;
+  color: #111111;
+}
+
+/* .resume-section h2::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: #222;
+} */
+
+/* =========================
+   SUMMARY
+========================= */
+
+.summary-text {
+  margin: 0;
+
+  font-size:
+    calc(9.1pt * var(--resume-scale));
+
+  line-height:
+    calc(1.32 * var(--resume-scale));
+
+  text-align: left;
+}
+
+/* =========================
+   SKILLS
+========================= */
+
+.skills-container {
+  display: flex;
+
+  flex-direction: column;
+
+  gap:
+    calc(0.25em * var(--resume-scale));
+}
+
+.skill-row {
+  display: grid;
+
+  grid-template-columns:
+    calc(34% * var(--resume-scale))
+    1fr;
+
+  gap:
+    calc(0.3em * var(--resume-scale));
+
+  font-size:
+    calc(8.9pt * var(--resume-scale));
+
+  line-height:
+    calc(1.3 * var(--resume-scale));
+}
+
+.skill-row strong {
+  font-weight: 700;
+}
+
+/* =========================
+   EDUCATION
+========================= */
+
+.resume-entry,
+.project-entry {
+  margin-bottom:
+    calc(0.48em * var(--resume-scale));
+
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.entry-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: baseline;
+
+  gap: 10px;
+
+  font-size:
+    calc(9.2pt * var(--resume-scale));
+}
+
+.entry-top strong {
+  font-weight: 700;
+}
+
+.entry-top span {
+  white-space: nowrap;
+
+  font-size:
+    calc(8.5pt * var(--resume-scale));
+}
+
+.entry-bottom {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top:
+    calc(0.12em * var(--resume-scale));
+
+  font-size:
+    calc(8.7pt * var(--resume-scale));
+}
+
+.entry-bottom strong {
+  white-space: nowrap;
+}
+
+/* =========================
+   PROJECTS
+========================= */
+
+.project-tech {
+  margin-top:
+    calc(0.12em * var(--resume-scale));
+
+  font-size:
+    calc(8.3pt * var(--resume-scale));
+
+  font-weight: 700;
+}
+
+.project-description,
+.description {
+  margin:
+    calc(0.18em * var(--resume-scale))
+    0 0;
+
+  font-size:
+    calc(8.8pt * var(--resume-scale));
+
+  line-height:
+    calc(1.28 * var(--resume-scale));
+
+  text-align: left;
+}
+
+.project-links {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap:
+    calc(0.8em * var(--resume-scale));
+
+  margin-top:
+    calc(0.15em * var(--resume-scale));
+
+  font-size:
+    calc(7.8pt * var(--resume-scale));
+
+  color: #222;
+}
+
+/* =========================
+   ACHIEVEMENTS
+========================= */
+
+.achievement-entry {
+  margin-bottom:
+    calc(0.25em * var(--resume-scale));
+
+  font-size:
+    calc(8.8pt * var(--resume-scale));
+
+  line-height:
+    calc(1.28 * var(--resume-scale));
+}
+
+/* =========================
+   ATS FRIENDLY
+========================= */
+
+.resume-page a {
+  color: #111111;
+
+  text-decoration: none;
+}
+
+.resume-page * {
+  box-sizing: border-box;
+}
+
+/*
+  Prevent sections from being split
+  during PDF generation.
+*/
+
+.resume-section,
+.resume-entry,
+.project-entry {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+
+
+/* =========================
+   PRINT / PDF
+========================= */
+
+@media print {
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .resume-preview-wrapper {
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .resume-page {
+    width: 210mm !important;
+    height: 297mm !important;
+
+    margin: 0 !important;
+
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+}
