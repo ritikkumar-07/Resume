@@ -140,7 +140,7 @@ export default function Minimal({ data = {} }) {
 
 
       {/* EDUCATION */}
-      {education.length > 0 && (
+      {/* {education.length > 0 && (
         <Section title="EDUCATION">
 
           <div className="resume-list">
@@ -189,7 +189,64 @@ export default function Minimal({ data = {} }) {
           </div>
 
         </Section>
-      )}
+      )} */}
+      {/* EDUCATION */}
+{education.length > 0 && (
+  <Section title="EDUCATION">
+
+    <div className="resume-list">
+
+      {education.map((item, i) => (
+        <div
+          className="resume-entry"
+          key={item.id || i}
+        >
+
+          {/* Degree + Date */}
+          <div className="resume-entry-top">
+
+            <strong>
+              {clean(item.degree) ||
+                'Degree / Qualification'}
+            </strong>
+
+            {(clean(item.startDate) ||
+              clean(item.endDate)) && (
+              <span>
+                {item.startDate}
+                {item.startDate && item.endDate
+                  ? ' – '
+                  : ''}
+                {item.endDate}
+              </span>
+            )}
+
+          </div>
+
+          {/* Institution + Score */}
+          <div className="resume-entry-bottom">
+
+            {clean(item.institution) && (
+              <span>
+                {item.institution}
+              </span>
+            )}
+
+            {clean(item.score) && (
+              <span>
+                {item.score}
+              </span>
+            )}
+
+          </div>
+
+        </div>
+      ))}
+
+    </div>
+
+  </Section>
+)}
 
 
       {/* PROJECTS */}
