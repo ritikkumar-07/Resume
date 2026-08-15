@@ -4,12 +4,15 @@ import {
   ArrowLeft, Download, Eye, FileText, GripVertical, Loader2, Plus, Save,
   Trash2, ChevronDown, ChevronUp, X
 } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
+// import html2pdf from 'html2pdf.js';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 import { useResumeStore } from '../store/resumeStore';
 import Minimal from '../components/templates/Minimal';
 import Executive from '../components/templates/Executive';
 import ModernCreative from '../components/templates/ModernCreative';
+
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -293,6 +296,62 @@ const renderPreview = useMemo(() => {
 }, [template, previewData]);
 
 
+// const downloadPDF = async () => {
+//   try {
+//     const element =
+//       previewRef.current?.querySelector('.resume-paper') ||
+//       previewRef.current;
+
+//     if (!element) {
+//       console.error('Resume preview not found');
+//       return;
+//     }
+
+//     const fileName =
+//       `${(data.personal?.fullName || 'Resume')
+//         .trim()
+//         .replace(/[^a-z0-9]+/gi, '_')
+//         .replace(/^_+|_+$/g, '')}.pdf`;
+
+//     const options = {
+//       margin: 0,
+
+//       filename: fileName,
+
+//       image: {
+//         type: 'jpeg',
+//         quality: 1
+//       },
+
+//       html2canvas: {
+//         scale: 3,
+//         useCORS: true,
+//         allowTaint: false,
+//         backgroundColor: '#ffffff'
+//       },
+
+//       jsPDF: {
+//         unit: 'mm',
+//         format: 'a4',
+//         orientation: 'portrait',
+//         compress: false
+//       },
+
+//       pagebreak: {
+//         mode: ['css', 'legacy']
+//       }
+//     };
+
+//     await html2pdf()
+//       .set(options)
+//       .from(element)
+//       .save();
+
+//   } catch (error) {
+//     console.error('PDF download failed:', error);
+//   }
+// };
+
 const downloadPDF = async () => {
   try {
     const element =
@@ -310,63 +369,344 @@ const downloadPDF = async () => {
         .replace(/[^a-z0-9]+/gi, '_')
         .replace(/^_+|_+$/g, '')}.pdf`;
 
-    const options = {
-      margin: 0,
+    // Create canvas from resume
+    const canvas = await html2canvas(element, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false
+    });
 
-      filename: fileName,
+    // A4 dimensions in mm
+    const A4_WIDTH = 210;
+    const A4_HEIGHT = 297;
 
-      image: {
-        type: 'jpeg',
-        quality: 1
-      },
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true
+    });
 
-      html2canvas: {
-        scale: 3,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff'
-      },
+    // Canvas aspect ratio
+    const canvasRatio =
+      canvas.width / canvas.height;
 
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-        compress: false
-      },
+    const pageRatio =
+      A4_WIDTH / A4_HEIGHT;
 
-      pagebreak: {
-        mode: ['css', 'legacy']
-      }
-    };
+    let renderWidth;
+    let renderHeight;
+    let offsetX = 0;
+    let offsetY = 0;
 
-    await html2pdf()
-      .set(options)
-      .from(element)
-      .save();
+    /*
+      Fit the complete resume inside
+      ONE A4 page.
+    */
+
+    if (canvasRatio > pageRatio) {
+      // Resume is wider
+      renderWidth = A4_WIDTH;
+      renderHeight =
+        A4_WIDTH / canvasRatio;
+
+      offsetY =
+        (A4_HEIGHT - renderHeight) / 2;
+    } else {
+      // Resume is taller
+      renderHeight = A4_HEIGHT;
+      renderWidth =
+        A4_HEIGHT * canvasRatio;
+
+      offsetX =
+        (A4_WIDTH - renderWidth) / 2;
+    }
+
+    pdf.addImage(
+      canvas.toDataURL('image/jpeg', 1.0),
+      'JPEG',
+      offsetX,
+      offsetY,
+      renderWidth,
+      renderHeight
+    );
+
+    // IMPORTANT:
+    // Only one page is ever created.
+    pdf.save(fileName);
 
   } catch (error) {
-    console.error('PDF download failed:', error);
+    console.error(
+      'PDF download failed:',
+      error
+    );
   }
 };
 
+  // const downloadDocx = async () => {
+  //   const p = data.personal;
+  //   const children = [];
+  //   children.push(new Paragraph({ text: p.fullName || 'YOUR NAME', heading: HeadingLevel.TITLE, alignment: 'center' }));
+  //   const contact = [p.email, p.phone, p.location, p.github, p.linkedin, p.portfolio].filter(Boolean).join(' | ');
+  //   if (contact) children.push(new Paragraph({ children: [new TextRun({ text: contact, size: 18 })], alignment: 'center' }));
+  //   const addSection = (title, rows) => { if (!rows.length) return; children.push(new Paragraph({ text: title, heading: HeadingLevel.HEADING_1 })); rows.forEach((r) => children.push(new Paragraph({ text: r }))); };
+  //   if (p.summary) addSection('PROFESSIONAL SUMMARY', [p.summary]);
+  //   addSection('SKILLS', data.skills.map((s) => `${s.category}: ${(s.items || []).filter(Boolean).join(', ')}`).filter(Boolean));
+  //   addSection('EDUCATION', data.education.map((e) => [e.degree, e.institution, e.score, [e.startDate, e.endDate].filter(Boolean).join(' – ')].filter(Boolean).join(' | ')));
+  //   addSection('ACADEMIC PROJECTS', data.projects.map((x) => [x.name, (x.technologies || []).filter(Boolean).join(', '), x.description, x.github, x.liveDemo].filter(Boolean).join(' | ')));
+  //   addSection('EXPERIENCE', data.experience.map((x) => [x.title, x.company, [x.startDate, x.endDate].filter(Boolean).join(' – '), x.description].filter(Boolean).join(' | ')));
+  //   addSection('POSITION OF RESPONSIBILITY', data.positions.map((x) => [x.role, x.organization, x.date, x.description].filter(Boolean).join(' | ')));
+  //   addSection('ACHIEVEMENTS / HOBBIES', data.achievements.map((x) => [x.title, x.description].filter(Boolean).join(' — ')));
+  //   const doc = new Document({ sections: [{ properties: {}, children }] });
+  //   const blob = await Packer.toBlob(doc);
+  //   const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${(p.fullName || 'Resume').replace(/[^a-z0-9]+/gi, '_')}.docx`; a.click(); URL.revokeObjectURL(url);
+  // };
+
   const downloadDocx = async () => {
-    const p = data.personal;
+  try {
+    const p = data.personal || {};
     const children = [];
-    children.push(new Paragraph({ text: p.fullName || 'YOUR NAME', heading: HeadingLevel.TITLE, alignment: 'center' }));
-    const contact = [p.email, p.phone, p.location, p.github, p.linkedin, p.portfolio].filter(Boolean).join(' | ');
-    if (contact) children.push(new Paragraph({ children: [new TextRun({ text: contact, size: 18 })], alignment: 'center' }));
-    const addSection = (title, rows) => { if (!rows.length) return; children.push(new Paragraph({ text: title, heading: HeadingLevel.HEADING_1 })); rows.forEach((r) => children.push(new Paragraph({ text: r }))); };
-    if (p.summary) addSection('PROFESSIONAL SUMMARY', [p.summary]);
-    addSection('SKILLS', data.skills.map((s) => `${s.category}: ${(s.items || []).filter(Boolean).join(', ')}`).filter(Boolean));
-    addSection('EDUCATION', data.education.map((e) => [e.degree, e.institution, e.score, [e.startDate, e.endDate].filter(Boolean).join(' – ')].filter(Boolean).join(' | ')));
-    addSection('ACADEMIC PROJECTS', data.projects.map((x) => [x.name, (x.technologies || []).filter(Boolean).join(', '), x.description, x.github, x.liveDemo].filter(Boolean).join(' | ')));
-    addSection('EXPERIENCE', data.experience.map((x) => [x.title, x.company, [x.startDate, x.endDate].filter(Boolean).join(' – '), x.description].filter(Boolean).join(' | ')));
-    addSection('POSITION OF RESPONSIBILITY', data.positions.map((x) => [x.role, x.organization, x.date, x.description].filter(Boolean).join(' | ')));
-    addSection('ACHIEVEMENTS / HOBBIES', data.achievements.map((x) => [x.title, x.description].filter(Boolean).join(' — ')));
-    const doc = new Document({ sections: [{ properties: {}, children }] });
+
+    // =========================
+    // HEADER
+    // =========================
+
+    children.push(
+      new Paragraph({
+        text: p.fullName || "YOUR NAME",
+        heading: HeadingLevel.TITLE,
+        alignment: "center",
+      })
+    );
+
+    const contact = [
+      p.email,
+      p.phone,
+      p.location,
+      p.github,
+      p.linkedin,
+      p.portfolio,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    if (contact) {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: contact,
+              size: 18,
+            }),
+          ],
+          alignment: "center",
+        })
+      );
+    }
+
+    // =========================
+    // SECTION HELPER
+    // =========================
+
+    const addSection = (title, rows) => {
+      if (!rows || rows.length === 0) return;
+
+      children.push(
+        new Paragraph({
+          text: title,
+          heading: HeadingLevel.HEADING_1,
+        })
+      );
+
+      rows.forEach((row) => {
+        if (row) {
+          children.push(
+            new Paragraph({
+              text: String(row),
+            })
+          );
+        }
+      });
+    };
+
+    // =========================
+    // SUMMARY
+    // =========================
+
+    if (p.summary) {
+      addSection("PROFESSIONAL SUMMARY", [p.summary]);
+    }
+
+    // =========================
+    // SKILLS
+    // =========================
+
+    addSection(
+      "SKILLS",
+      (data.skills || [])
+        .map((s) => {
+          const items = Array.isArray(s.items)
+            ? s.items
+            : Array.isArray(s.skills)
+              ? s.skills
+              : s.skills
+                ? [s.skills]
+                : [];
+
+          return `${s.category || "Skills"}: ${items
+            .filter(Boolean)
+            .join(", ")}`;
+        })
+        .filter(Boolean)
+    );
+
+    // =========================
+    // EDUCATION
+    // =========================
+
+    addSection(
+      "EDUCATION",
+      (data.education || [])
+        .map((e) =>
+          [
+            e.degree,
+            e.institution,
+            e.score,
+            [e.startDate, e.endDate]
+              .filter(Boolean)
+              .join(" – "),
+          ]
+            .filter(Boolean)
+            .join(" | ")
+        )
+        .filter(Boolean)
+    );
+
+    // =========================
+    // ACADEMIC PROJECTS
+    // =========================
+
+    addSection(
+      "ACADEMIC PROJECTS",
+      (data.projects || [])
+        .map((x) => {
+          const technologies = Array.isArray(x.technologies)
+            ? x.technologies
+                .filter(Boolean)
+                .join(", ")
+            : x.technologies || "";
+
+          return [
+            x.name,
+            technologies,
+            x.description,
+            x.github,
+            x.liveDemo,
+          ]
+            .filter(Boolean)
+            .join(" | ");
+        })
+        .filter(Boolean)
+    );
+
+    // =========================
+    // EXPERIENCE
+    // =========================
+
+    addSection(
+      "EXPERIENCE",
+      (data.experience || [])
+        .map((x) =>
+          [
+            x.title,
+            x.company,
+            [x.startDate, x.endDate]
+              .filter(Boolean)
+              .join(" – "),
+            x.description,
+          ]
+            .filter(Boolean)
+            .join(" | ")
+        )
+        .filter(Boolean)
+    );
+
+    // =========================
+    // POSITION OF RESPONSIBILITY
+    // =========================
+
+    addSection(
+      "POSITION OF RESPONSIBILITY",
+      (data.positions || [])
+        .map((x) =>
+          [
+            x.role,
+            x.organization,
+            x.date,
+            x.description,
+          ]
+            .filter(Boolean)
+            .join(" | ")
+        )
+        .filter(Boolean)
+    );
+
+    // =========================
+    // ACHIEVEMENTS
+    // =========================
+
+    addSection(
+      "ACHIEVEMENTS / HOBBIES",
+      (data.achievements || [])
+        .map((x) =>
+          [x.title, x.description]
+            .filter(Boolean)
+            .join(" — ")
+        )
+        .filter(Boolean)
+    );
+
+    // =========================
+    // CREATE DOCX
+    // =========================
+
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children,
+        },
+      ],
+    });
+
     const blob = await Packer.toBlob(doc);
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${(p.fullName || 'Resume').replace(/[^a-z0-9]+/gi, '_')}.docx`; a.click(); URL.revokeObjectURL(url);
-  };
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+
+    const fileName =
+      `${p.fullName || "Resume"}`
+        .trim()
+        .replace(/[^a-z0-9]+/gi, "_")
+        .replace(/^_+|_+$/g, "") || "Resume";
+
+    a.download = `${fileName}.docx`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error("DOCX download failed:", error);
+    alert("DOCX download failed. Check the browser console.");
+  }
+};
 
   if (isLoading || !data) return <div className="builder-loading"><Loader2 className="spin" /> Loading resume...</div>;
   if (error) return <div className="builder-loading error">{error}</div>;
@@ -473,7 +813,22 @@ const downloadPDF = async () => {
 
           <SectionCard title="Academic Projects" count={data.projects.length} open={open.projects} onToggle={() => setOpen(o => ({ ...o, projects: !o.projects }))} onAdd={() => addArray('projects', newProject)}>
             {data.projects.map((x, i) => <ItemCard key={x.id || i} title={x.name || 'Project'} first={i === 0} last={i === data.projects.length - 1} onDelete={() => removeArray('projects', i)} onMoveUp={() => moveArray('projects', i, -1)} onMoveDown={() => moveArray('projects', i, 1)}>
-              <div className="field-grid two"><Input label="Project Name" value={x.name} onChange={(v) => updateArray('projects', i, { name: v })} placeholder="TalkingRabbit-AI" /><Input label="Date" value={x.date} onChange={(v) => updateArray('projects', i, { date: v })} placeholder="2026" /><Input label="Technologies (comma separated)" value={(x.technologies || []).join(', ')} onChange={(v) => updateArray('projects', i, { technologies: v.split(',').map(t => t.trim()).filter(Boolean) })} placeholder="React.js, Node.js, MongoDB" /><Input label="GitHub URL" value={x.github} onChange={(v) => updateArray('projects', i, { github: v })} placeholder="github.com/username/project" /><Input label="Live Demo" value={x.liveDemo} onChange={(v) => updateArray('projects', i, { liveDemo: v })} placeholder="https://..." /></div><Textarea label="Project Description" value={x.description} onChange={(v) => updateArray('projects', i, { description: v })} placeholder="Describe what you built, key features and impact." />
+              <div className="field-grid two"><Input label="Project Name" value={x.name} onChange={(v) => updateArray('projects', i, { name: v })} placeholder="TalkingRabbit-AI" /><Input label="Date" value={x.date} onChange={(v) => updateArray('projects', i, { date: v })} placeholder="2026" />
+<Input
+  label="Technologies (comma separated)"
+  value={
+    Array.isArray(x.technologies)
+      ? x.technologies.join(', ')
+      : x.technologies || ''
+  }
+  onChange={(v) =>
+    updateArray('projects', i, {
+      technologies: v
+    })
+  }
+  placeholder="React.js, Node.js, MongoDB"
+/>
+              <Input label="GitHub URL" value={x.github} onChange={(v) => updateArray('projects', i, { github: v })} placeholder="github.com/username/project" /><Input label="Live Demo" value={x.liveDemo} onChange={(v) => updateArray('projects', i, { liveDemo: v })} placeholder="https://..." /></div><Textarea label="Project Description" value={x.description} onChange={(v) => updateArray('projects', i, { description: v })} placeholder="Describe what you built, key features and impact." />
             </ItemCard>)}
           </SectionCard>
 

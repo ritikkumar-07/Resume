@@ -1,5 +1,11 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
+
 import "./ResumePreview.css";
+import {
+  Github,
+  Linkedin,
+  Globe
+} from "lucide-react";
 
 const ResumePreview = ({ resumeData }) => {
   const pageRef = useRef(null);
@@ -7,62 +13,75 @@ const ResumePreview = ({ resumeData }) => {
 
   const [scale, setScale] = useState(1);
 
-  useLayoutEffect(() => {
-    const page = pageRef.current;
-    const content = contentRef.current;
+  // useLayoutEffect(() => {
+  //   const page = pageRef.current;
+  //   const content = contentRef.current;
 
-    if (!page || !content) return;
+  //   if (!page || !content) return;
 
-    let frame;
+  //   let frame;
 
-    const fitResume = () => {
-      cancelAnimationFrame(frame);
+  //   const fitResume = () => {
+  //     cancelAnimationFrame(frame);
 
-      frame = requestAnimationFrame(() => {
-        const availableHeight = page.clientHeight;
-        const contentHeight = content.scrollHeight;
+  //     frame = requestAnimationFrame(() => {
+  //       const availableHeight = page.clientHeight;
+  //       const contentHeight = content.scrollHeight;
 
-        if (!availableHeight || !contentHeight) return;
+  //       if (!availableHeight || !contentHeight) return;
 
-        const idealScale = availableHeight / contentHeight;
+  //       const idealScale = availableHeight / contentHeight;
 
-        /*
-          1.00 = normal size
-          >1   = content gets slightly larger
-          <1   = content gets smaller
-        */
+  //       /*
+  //         1.00 = normal size
+  //         >1   = content gets slightly larger
+  //         <1   = content gets smaller
+  //       */
 
-        let newScale = idealScale;
+  //       // let newScale = idealScale;
 
-        // Don't make a short resume ridiculously large
-        newScale = Math.min(newScale, 1.18);
+  //       // // Don't make a short resume ridiculously large
+  //       // newScale = Math.min(newScale, 1.18);
 
-        // Don't make a long resume unreadably small
-        newScale = Math.max(newScale, 0.76);
+  //       // // Don't make a long resume unreadably small
+  //       // newScale = Math.max(newScale, 0.76);
 
-        // Small safety margin
-        if (newScale > 1) {
-          newScale *= 0.97;
-        } else {
-          newScale *= 0.985;
-        }
+  //       // // Small safety margin
+  //       // if (newScale > 1) {
+  //       //   newScale *= 0.97;
+  //       // } else {
+  //       //   newScale *= 0.985;
+  //       // }
 
-        setScale(Number(newScale.toFixed(3)));
-      });
-    };
+  //       // setScale(Number(newScale.toFixed(3)));
 
-    fitResume();
+  //       const idealScale = availableHeight / contentHeight;
 
-    const resizeObserver = new ResizeObserver(fitResume);
+  //       let newScale = Math.min(1, idealScale);
 
-    resizeObserver.observe(page);
-    resizeObserver.observe(content);
+  //       // Resume ko bahut chhota mat hone do
+  //       newScale = Math.max(newScale, 0.76);
 
-    return () => {
-      cancelAnimationFrame(frame);
-      resizeObserver.disconnect();
-    };
-  }, [resumeData]);
+  //       // Small safety margin
+  //       newScale *= 0.97;
+
+  //     setScale(Number(newScale.toFixed(3)));
+
+  //     });
+  //   };
+
+  //   fitResume();
+
+  //   const resizeObserver = new ResizeObserver(fitResume);
+
+  //   resizeObserver.observe(page);
+  //   resizeObserver.observe(content);
+
+  //   return () => {
+  //     cancelAnimationFrame(frame);
+  //     resizeObserver.disconnect();
+  //   };
+  // }, [resumeData]);
 
   const {
     personal = {},
@@ -103,7 +122,7 @@ const ResumePreview = ({ resumeData }) => {
               {personal.location && <span>{personal.location}</span>}
             </div>
 
-            <div className="contact-line">
+            {/* <div className="contact-line">
               {personal.github && (
                 <span>{personal.github}</span>
               )}
@@ -115,7 +134,74 @@ const ResumePreview = ({ resumeData }) => {
               {personal.portfolio && (
                 <span>{personal.portfolio}</span>
               )}
-            </div>
+            </div> */}
+<div className="social-links">
+
+  {personal.github && (
+    <a
+      href={
+        personal.github.startsWith("http")
+          ? personal.github
+          : `https://${personal.github}`
+      }
+      target="_blank"
+      rel="noopener noreferrer"
+      className="social-item"
+    >
+      <span className="social-icon">
+        <Github size={14} />
+      </span>
+
+      <span className="social-url">
+        {personal.github}
+      </span>
+    </a>
+  )}
+
+  {personal.linkedin && (
+    <a
+      href={
+        personal.linkedin.startsWith("http")
+          ? personal.linkedin
+          : `https://${personal.linkedin}`
+      }
+      target="_blank"
+      rel="noopener noreferrer"
+      className="social-item"
+    >
+      <span className="social-icon">
+        <Linkedin size={14} />
+      </span>
+
+      <span className="social-url">
+        {personal.linkedin}
+      </span>
+    </a>
+  )}
+
+  {personal.portfolio && (
+    <a
+      href={
+        personal.portfolio.startsWith("http")
+          ? personal.portfolio
+          : `https://${personal.portfolio}`
+      }
+      target="_blank"
+      rel="noopener noreferrer"
+      className="social-item"
+    >
+      <span className="social-icon">
+        <Globe size={14} />
+      </span>
+
+      <span className="social-url">
+        {personal.portfolio}
+      </span>
+    </a>
+  )}
+
+</div>
+            
           </header>
 
           {/* SUMMARY */}
