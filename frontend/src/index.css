@@ -53,8 +53,7 @@ button { cursor: pointer; }
   font-weight: 600;
 }
 
-.resume-contact,
-.resume-links {
+.resume-contact {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -63,79 +62,57 @@ button { cursor: pointer; }
   margin-top: 4px;
 }
 
+.resume-contact span,
+.resume-contact-link {
+  font-size: 12.5px;
+}
+
+.resume-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 14px;
+  margin-top: 4px;
+  line-height: 1;
+}
+
 .resume-social-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-
+  justify-content: center;
+  gap: 5px;
   white-space: nowrap;
-
+  line-height: 1;
   color: #2563eb;
   text-decoration: none;
+  cursor: pointer;
+  vertical-align: middle;
+}
 
-  font-size: 8.5pt;
+.resume-social-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
 }
 
 .resume-social-icon {
-  width: 13px;
-  height: 13px;
-
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
   flex-shrink: 0;
-
+  display: inline-block;
+  vertical-align: middle;
   color: #111;
-  stroke-width: 2.5;
-}
-/* .resume-links {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 3px 10px;
-  font-size: 15px;
-  line-height: 1.5;
-  margin-top: 3px;
 }
 
-.resume-section {
-  margin-top: 7px;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.social-links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-}
-
-.social-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
+.resume-social-link span {
+  font-size: 12.5px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
   white-space: nowrap;
 }
-
-.social-icon {
-  width: 1em;
-  height: 1em;
-  flex-shrink: 0;
-  color: #111;
-}
-
-.github-icon {
-  width: 1.05em;
-  height: 1.05em;
-}
-
-.linkedin-icon {
-  width: 1em;
-  height: 1em;
-}
-
-.portfolio-icon {
-  font-size: 0.9em;
-  line-height: 1;
-} */
 
 /* .resume-section-title {
   position: relative;
@@ -299,63 +276,7 @@ button { cursor: pointer; }
   font-weight: 700;
 }
 
-/* ================================
-   MINIMAL TEMPLATE SOCIAL LINKS
-================================ */
 
-.resume-paper .resume-links {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  flex-wrap: nowrap !important;
-
-  gap: 12px !important;
-
-  margin-top: 3px !important;
-
-  line-height: 1 !important;
-}
-
-.resume-paper .resume-social-link {
-  display: inline-flex !important;
-
-  align-items: center !important;
-  justify-content: center !important;
-
-  gap: 4px !important;
-
-  white-space: nowrap !important;
-
-  line-height: 1 !important;
-
-  color: #2563eb !important;
-
-  text-decoration: none !important;
-
-  cursor: pointer !important;
-}
-
-.resume-paper .resume-social-link:hover {
-  text-decoration: underline !important;
-}
-
-.resume-paper .resume-social-icon {
-  width: 14px !important;
-  height: 14px !important;
-
-  flex: 0 0 14px !important;
-
-  display: block !important;
-
-  margin: 0 !important;
-
-  padding: 0 !important;
-
-  vertical-align: middle !important;
-
-  color: #111 !important;
-}
 
 .resume-tech {
   margin: 1px 0;

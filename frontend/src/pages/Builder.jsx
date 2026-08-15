@@ -292,65 +292,7 @@ const renderPreview = useMemo(() => {
   }
 
   return <Minimal data={previewData} />;
-
 }, [template, previewData]);
-
-
-// const downloadPDF = async () => {
-//   try {
-//     const element =
-//       previewRef.current?.querySelector('.resume-paper') ||
-//       previewRef.current;
-
-//     if (!element) {
-//       console.error('Resume preview not found');
-//       return;
-//     }
-
-//     const fileName =
-//       `${(data.personal?.fullName || 'Resume')
-//         .trim()
-//         .replace(/[^a-z0-9]+/gi, '_')
-//         .replace(/^_+|_+$/g, '')}.pdf`;
-
-//     const options = {
-//       margin: 0,
-
-//       filename: fileName,
-
-//       image: {
-//         type: 'jpeg',
-//         quality: 1
-//       },
-
-//       html2canvas: {
-//         scale: 3,
-//         useCORS: true,
-//         allowTaint: false,
-//         backgroundColor: '#ffffff'
-//       },
-
-//       jsPDF: {
-//         unit: 'mm',
-//         format: 'a4',
-//         orientation: 'portrait',
-//         compress: false
-//       },
-
-//       pagebreak: {
-//         mode: ['css', 'legacy']
-//       }
-//     };
-
-//     await html2pdf()
-//       .set(options)
-//       .from(element)
-//       .save();
-
-//   } catch (error) {
-//     console.error('PDF download failed:', error);
-//   }
-// };
 
 const downloadPDF = async () => {
   try {
@@ -367,13 +309,13 @@ const downloadPDF = async () => {
       `${(data.personal?.fullName || 'Resume')
         .trim()
         .replace(/[^a-z0-9]+/gi, '_')
-        .replace(/^_+|_+$/g, '')}.pdf`;
+        .replace(/^_+|_+$/g, '') || 'Resume'}.pdf`;
 
-    // Create canvas from resume
+    // High resolution render for razor-sharp text and icons (scale: 4 = ~400 DPI)
     const canvas = await html2canvas(element, {
-      scale: 3,
+      scale: 4,
       useCORS: true,
-      allowTaint: false,
+      allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false
     });
@@ -389,82 +331,57 @@ const downloadPDF = async () => {
       compress: true
     });
 
-    // Canvas aspect ratio
-    const canvasRatio =
-      canvas.width / canvas.height;
-
-    const pageRatio =
-      A4_WIDTH / A4_HEIGHT;
-
-    let renderWidth;
-    let renderHeight;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    /*
-      Fit the complete resume inside
-      ONE A4 page.
-    */
-
-    if (canvasRatio > pageRatio) {
-      // Resume is wider
-      renderWidth = A4_WIDTH;
-      renderHeight =
-        A4_WIDTH / canvasRatio;
-
-      offsetY =
-        (A4_HEIGHT - renderHeight) / 2;
-    } else {
-      // Resume is taller
-      renderHeight = A4_HEIGHT;
-      renderWidth =
-        A4_HEIGHT * canvasRatio;
-
-      offsetX =
-        (A4_WIDTH - renderWidth) / 2;
-    }
-
+    // Add high-resolution crisp image (PNG for lossless text & icon sharpness)
     pdf.addImage(
-      canvas.toDataURL('image/jpeg', 1.0),
-      'JPEG',
-      offsetX,
-      offsetY,
-      renderWidth,
-      renderHeight
+      canvas.toDataURL('image/png'),
+      'PNG',
+      0,
+      0,
+      A4_WIDTH,
+      A4_HEIGHT,
+      undefined,
+      'FAST'
     );
 
-    // IMPORTANT:
-    // Only one page is ever created.
+    // Make all links clickable in the generated PDF
+    const elementRect = element.getBoundingClientRect();
+    const aTags = element.querySelectorAll('a[href]');
+
+    const scaleX = A4_WIDTH / elementRect.width;
+    const scaleY = A4_HEIGHT / elementRect.height;
+
+    aTags.forEach((a) => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#' || href.startsWith('javascript:')) return;
+
+      const rect = a.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      const linkX = (rect.left - elementRect.left) * scaleX;
+      const linkY = (rect.top - elementRect.top) * scaleY;
+      const linkW = rect.width * scaleX;
+      const linkH = rect.height * scaleY;
+
+      let targetUrl = href;
+      if (
+        !/^https?:\/\//i.test(targetUrl) &&
+        !/^mailto:/i.test(targetUrl) &&
+        !/^tel:/i.test(targetUrl)
+      ) {
+        targetUrl = `https://${targetUrl}`;
+      }
+
+      pdf.link(linkX, linkY, linkW, linkH, { url: targetUrl });
+    });
+
     pdf.save(fileName);
 
   } catch (error) {
-    console.error(
-      'PDF download failed:',
-      error
-    );
+    console.error('PDF download failed:', error);
   }
 };
 
-  // const downloadDocx = async () => {
-  //   const p = data.personal;
-  //   const children = [];
-  //   children.push(new Paragraph({ text: p.fullName || 'YOUR NAME', heading: HeadingLevel.TITLE, alignment: 'center' }));
-  //   const contact = [p.email, p.phone, p.location, p.github, p.linkedin, p.portfolio].filter(Boolean).join(' | ');
-  //   if (contact) children.push(new Paragraph({ children: [new TextRun({ text: contact, size: 18 })], alignment: 'center' }));
-  //   const addSection = (title, rows) => { if (!rows.length) return; children.push(new Paragraph({ text: title, heading: HeadingLevel.HEADING_1 })); rows.forEach((r) => children.push(new Paragraph({ text: r }))); };
-  //   if (p.summary) addSection('PROFESSIONAL SUMMARY', [p.summary]);
-  //   addSection('SKILLS', data.skills.map((s) => `${s.category}: ${(s.items || []).filter(Boolean).join(', ')}`).filter(Boolean));
-  //   addSection('EDUCATION', data.education.map((e) => [e.degree, e.institution, e.score, [e.startDate, e.endDate].filter(Boolean).join(' – ')].filter(Boolean).join(' | ')));
-  //   addSection('ACADEMIC PROJECTS', data.projects.map((x) => [x.name, (x.technologies || []).filter(Boolean).join(', '), x.description, x.github, x.liveDemo].filter(Boolean).join(' | ')));
-  //   addSection('EXPERIENCE', data.experience.map((x) => [x.title, x.company, [x.startDate, x.endDate].filter(Boolean).join(' – '), x.description].filter(Boolean).join(' | ')));
-  //   addSection('POSITION OF RESPONSIBILITY', data.positions.map((x) => [x.role, x.organization, x.date, x.description].filter(Boolean).join(' | ')));
-  //   addSection('ACHIEVEMENTS / HOBBIES', data.achievements.map((x) => [x.title, x.description].filter(Boolean).join(' — ')));
-  //   const doc = new Document({ sections: [{ properties: {}, children }] });
-  //   const blob = await Packer.toBlob(doc);
-  //   const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${(p.fullName || 'Resume').replace(/[^a-z0-9]+/gi, '_')}.docx`; a.click(); URL.revokeObjectURL(url);
-  // };
-
-  const downloadDocx = async () => {
+const downloadDocx = async () => {
   try {
     const p = data.personal || {};
     const children = [];

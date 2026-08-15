@@ -94,55 +94,45 @@ export default function Minimal({ data = {} }) {
 
         </div>
 
-        {/* <div className="resume-links">
-
-          <ResumeLink value={p.github} />
-
-          <ResumeLink value={p.linkedin} />
-
-          <ResumeLink value={p.portfolio} />
-
-        </div> */}
-
         <div className="resume-links">
 
-  {clean(p.github) && (
-    <a
-      href={makeUrl(p.github)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="resume-social-link"
-    >
-      <Github className="resume-social-icon" />
-      <span>{p.github}</span>
-    </a>
-  )}
+          {clean(p.github) && (
+            <a
+              href={makeUrl(p.github)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="resume-social-link"
+            >
+              <Github size={14} className="resume-social-icon" />
+              <span>{p.github}</span>
+            </a>
+          )}
 
-  {clean(p.linkedin) && (
-    <a
-      href={makeUrl(p.linkedin)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="resume-social-link"
-    >
-      <Linkedin className="resume-social-icon" />
-      <span>{p.linkedin}</span>
-    </a>
-  )}
+          {clean(p.linkedin) && (
+            <a
+              href={makeUrl(p.linkedin)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="resume-social-link"
+            >
+              <Linkedin size={14} className="resume-social-icon" />
+              <span>{p.linkedin}</span>
+            </a>
+          )}
 
-  {clean(p.portfolio) && (
-    <a
-      href={makeUrl(p.portfolio)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="resume-social-link"
-    >
-      <Globe className="resume-social-icon" />
-      <span>{p.portfolio}</span>
-    </a>
-  )}
+          {clean(p.portfolio) && (
+            <a
+              href={makeUrl(p.portfolio)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="resume-social-link"
+            >
+              <Globe size={14} className="resume-social-icon" />
+              <span>{p.portfolio}</span>
+            </a>
+          )}
 
-</div>
+        </div>
 
       </header>
 
@@ -187,7 +177,7 @@ export default function Minimal({ data = {} }) {
 
 
       {/* EDUCATION */}
-      {/* {education.length > 0 && (
+      {education.length > 0 && (
         <Section title="EDUCATION">
 
           <div className="resume-list">
@@ -198,36 +188,63 @@ export default function Minimal({ data = {} }) {
                 key={item.id || i}
               >
 
-                <div className="resume-entry-main">
-
+                <div
+                  className="resume-entry-top"
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    gap: '10px',
+                  }}
+                >
                   <strong>
-                    {clean(item.degree) ||
-                      'Degree / Qualification'}
+                    {clean(item.degree) || 'Degree / Qualification'}
                   </strong>
 
-                  {clean(item.institution) && (
-                    <span>{item.institution}</span>
+                  {(clean(item.startDate) || clean(item.endDate)) && (
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        whiteSpace: 'nowrap',
+                        textAlign: 'right',
+                      }}
+                    >
+                      {item.startDate}
+                      {item.startDate && item.endDate ? ' – ' : ''}
+                      {item.endDate}
+                    </span>
                   )}
-
                 </div>
 
-                <div className="resume-entry-side">
-
-                  {(clean(item.startDate) ||
-                    clean(item.endDate)) && (
+                <div
+                  className="resume-entry-bottom"
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    gap: '10px',
+                    marginTop: '0.12em',
+                  }}
+                >
+                  {clean(item.institution) && (
                     <span>
-                      {item.startDate}
-                      {item.startDate && item.endDate
-                        ? ' – '
-                        : ''}
-                      {item.endDate}
+                      {item.institution}
                     </span>
                   )}
 
                   {clean(item.score) && (
-                    <span>{item.score}</span>
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        whiteSpace: 'nowrap',
+                        textAlign: 'right',
+                      }}
+                    >
+                      {item.score}
+                    </span>
                   )}
-
                 </div>
 
               </div>
@@ -236,123 +253,7 @@ export default function Minimal({ data = {} }) {
           </div>
 
         </Section>
-      )} */}
-      {/* EDUCATION */}
-{education.length > 0 && (
-  <Section title="EDUCATION">
-
-    <div className="resume-list">
-
-      {education.map((item, i) => (
-        <div
-          className="resume-entry"
-          key={item.id || i}
-        >
-
-          {/* Degree + Date */}
-          {/* <div className="resume-entry-top">
-
-            <strong>
-              {clean(item.degree) ||
-                'Degree / Qualification'}
-            </strong>
-
-            {(clean(item.startDate) ||
-              clean(item.endDate)) && (
-              <span>
-                {item.startDate}
-                {item.startDate && item.endDate
-                  ? ' – '
-                  : ''}
-                {item.endDate}
-              </span>
-            )}
-
-          </div> */}
-
-          <div
-  className="resume-entry-top"
-  style={{
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    gap: '10px',
-  }}
->
-  <strong>
-    {clean(item.degree) || 'Degree / Qualification'}
-  </strong>
-
-  {(clean(item.startDate) || clean(item.endDate)) && (
-    <span
-      style={{
-        marginLeft: 'auto',
-        whiteSpace: 'nowrap',
-        textAlign: 'right',
-      }}
-    >
-      {item.startDate}
-      {item.startDate && item.endDate ? ' – ' : ''}
-      {item.endDate}
-    </span>
-  )}
-</div>
-
-          {/* Institution + Score */}
-          {/* <div className="resume-entry-bottom">
-
-            {clean(item.institution) && (
-              <span>
-                {item.institution}
-              </span>
-            )}
-
-            {clean(item.score) && (
-              <span>
-                {item.score}
-              </span>
-            )}
-
-          </div> */}
-
-          <div
-  className="resume-entry-bottom"
-  style={{
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    gap: '10px',
-    marginTop: '0.12em',
-  }}
->
-  {clean(item.institution) && (
-    <span>
-      {item.institution}
-    </span>
-  )}
-
-  {clean(item.score) && (
-    <span
-      style={{
-        marginLeft: 'auto',
-        whiteSpace: 'nowrap',
-        textAlign: 'right',
-      }}
-    >
-      {item.score}
-    </span>
-  )}
-</div>
-
-        </div>
-      ))}
-
-    </div>
-
-  </Section>
-)}
+      )}
 
 
       {/* PROJECTS */}
@@ -367,31 +268,31 @@ export default function Minimal({ data = {} }) {
                 key={item.id || i}
               >
 
-<div className="resume-entry-line">
+                <div className="resume-entry-line">
 
-  <strong>
-    {clean(item.name) || 'Project Name'}
-  </strong>
+                  <strong>
+                    {clean(item.name) || 'Project Name'}
+                  </strong>
 
-  {clean(item.date) && (
-    <span>{item.date}</span>
-  )}
+                  {clean(item.date) && (
+                    <span>{item.date}</span>
+                  )}
 
-</div>
+                </div>
 
-{item.technologies && (
-  <div className="resume-tech">
-    {Array.isArray(item.technologies)
-      ? item.technologies.filter(Boolean).join(' · ')
-      : item.technologies}
-  </div>
-)}
+                {item.technologies && (
+                  <div className="resume-tech">
+                    {Array.isArray(item.technologies)
+                      ? item.technologies.filter(Boolean).join(' · ')
+                      : item.technologies}
+                  </div>
+                )}
 
-{clean(item.description) && (
-  <p className="resume-bullets">
-    {item.description}
-  </p>
-)}
+                {clean(item.description) && (
+                  <p className="resume-bullets">
+                    {item.description}
+                  </p>
+                )}
 
                 {(clean(item.github) ||
                   clean(item.liveDemo)) && (
