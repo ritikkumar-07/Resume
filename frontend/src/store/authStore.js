@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
+const resolvedApiBase = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5001/api`;
+
 const api = axios.create({
-  baseURL: 'http://10.143.83.197:5001/api',
+  baseURL: resolvedApiBase,
   withCredentials: true,
 });
 
@@ -126,6 +128,44 @@ export const useAuthStore = create((set) => ({
       });
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  },
+
+  socialLogin: async (provider, payload) => {
+    set({
+      isLoading: true,
+      error: null,
+    });
+
+    try {
+      const res = await api.post(`/auth/${provider}`, payload);
+
+      set({
+        user: res.data.user,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+
+      const message =
+        error.response?.data?.message ||
+        `Unable to sign in with ${provider}`;
+
+      set({
+        error: message,
+        isLoading: false,
+      });
+
+      return {
+        success: false,
+        message,
+      };
     }
   },
 }));

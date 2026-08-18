@@ -1,12 +1,15 @@
 import React from 'react';
 
 export default function Login() {
+  // const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.143.83.197:5001';
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+
   const handleGoogleLogin = () => {
-    window.location.href = 'http://10.143.83.197:5001/api/auth/google';
+    window.location.href = `${API_BASE}/api/auth/google`;
   };
 
   const handleMicrosoftLogin = () => {
-    window.location.href = 'http://10.143.83.197:5001/api/auth/microsoft';
+    window.location.href = `${API_BASE}/api/auth/microsoft`;
   };
 
   return (

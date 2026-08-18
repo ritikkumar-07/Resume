@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://10.143.83.197:5001/api',
+  // baseURL: 'http://10.143.83.197:5001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api',
   withCredentials: true
 });
 
@@ -37,7 +38,7 @@ export const useResumeStore = create((set, get) => ({
 
   try {
     console.log('Creating resume...');
-    console.log('API URL:', 'http://10.143.83.197:5001/api/resumes');
+    console.log('API URL:', import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/resumes');
 
     const res = await api.post('/resumes', {
       title,
