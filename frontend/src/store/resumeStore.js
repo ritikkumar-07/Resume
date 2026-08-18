@@ -2,8 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 const api = axios.create({
-  // baseURL: 'http://10.143.83.197:5001/api',
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true
 });
 
@@ -16,7 +15,7 @@ export const useResumeStore = create((set, get) => ({
   fetchResumes: async () => {
     set({ isLoading: true, error: null });
     try {
-      const res = await api.get('/resumes');
+      const res = await api.get('/api/resumes');
       set({ resumes: res.data.resumes, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to load resumes', isLoading: false });

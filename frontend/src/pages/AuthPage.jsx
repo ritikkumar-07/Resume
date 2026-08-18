@@ -34,7 +34,7 @@ export default function AuthPage({ type = 'login' }) {
 
   // Google OAuth handler
   // const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.143.83.197:5001';
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const handleGoogleLogin = useCallback(() => {
     if (socialLoading) return;
@@ -50,7 +50,7 @@ export default function AuthPage({ type = 'login' }) {
     setSocialError(null);
     setSocialLoading('microsoft');
     // const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.143.83.197:5001';
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
     window.location.href = `${API_BASE}/api/auth/microsoft`;
   }, [socialLoading]);
 
