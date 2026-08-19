@@ -26,19 +26,23 @@ const issueTokensAndSession = async (user, res, rememberMe = true) => {
     }
   });
 
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 60 * 60 * 1000
-  });
+res.cookie('accessToken', accessToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: 60 * 60 * 1000,
+  path: '/',
+});
 
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000
-  });
+res.cookie('refreshToken', refreshToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: rememberMe
+    ? 30 * 24 * 60 * 60 * 1000
+    : 24 * 60 * 60 * 1000,
+  path: '/',
+});
 
   return { accessToken, refreshToken };
 };

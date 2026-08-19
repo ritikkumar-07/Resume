@@ -34,14 +34,14 @@ export default function AuthPage({ type = 'login' }) {
 
   // Google OAuth handler
   // const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.143.83.197:5001';
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_API_URL;
 
   const handleGoogleLogin = useCallback(() => {
     if (socialLoading) return;
     setSocialError(null);
     setSocialLoading('google');
     // Start server-side OAuth redirect
-    window.location.href = `${API_BASE}/api/auth/google`;
+    window.location.href = `${API_BASE}/auth/google`;
   }, [socialLoading]);
 
   // Microsoft OAuth handler
@@ -50,8 +50,8 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
     setSocialError(null);
     setSocialLoading('microsoft');
     // const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.143.83.197:5001';
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-    window.location.href = `${API_BASE}/api/auth/microsoft`;
+const API_BASE = import.meta.env.VITE_API_URL;
+    window.location.href = `${API_BASE}/auth/microsoft`;
   }, [socialLoading]);
 
   const displayError = socialError || error;

@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const resolvedApiBase = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5001/api`;
+// const resolvedApiBase = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5001/api`;
+const resolvedApiBase =
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:5001/api';
 
 const api = axios.create({
   baseURL: resolvedApiBase,
