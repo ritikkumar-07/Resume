@@ -26,22 +26,25 @@ const issueTokensAndSession = async (user, res, rememberMe = true) => {
     }
   });
 
-res.cookie('accessToken', accessToken, {
+const isProduction = process.env.NODE_ENV === 'production';
+
+const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: 'none',
-  maxAge: 60 * 60 * 1000,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
   path: '/',
+};
+
+res.cookie('accessToken', accessToken, {
+  ...cookieOptions,
+  maxAge: 60 * 60 * 1000,
 });
 
 res.cookie('refreshToken', refreshToken, {
-  httpOnly: true,
-  secure: true,
-  sameSite: 'none',
+  ...cookieOptions,
   maxAge: rememberMe
     ? 30 * 24 * 60 * 60 * 1000
     : 24 * 60 * 60 * 1000,
-  path: '/',
 });
 
   return { accessToken, refreshToken };
@@ -232,9 +235,17 @@ const logout = async (req, res) => {
   } catch (error) {
     console.error('Logout session cleanup error:', error);
   }
+const isProduction = process.env.NODE_ENV === 'production';
 
-  res.clearCookie('accessToken');
-  res.clearCookie('refreshToken');
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
+  path: '/',
+};
+
+res.clearCookie('accessToken', cookieOptions);
+res.clearCookie('refreshToken', cookieOptions);
   res.json({ success: true, message: 'Logged out successfully' });
 };
 
