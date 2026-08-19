@@ -12,15 +12,28 @@ export const useResumeStore = create((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchResumes: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await api.get('/api/resumes');
-      set({ resumes: res.data.resumes, isLoading: false });
-    } catch (error) {
-      set({ error: 'Failed to load resumes', isLoading: false });
-    }
-  },
+fetchResumes: async () => {
+  set({ isLoading: true, error: null });
+
+  try {
+    const res = await api.get('/resumes');
+
+    set({
+      resumes: res.data.resumes,
+      isLoading: false,
+      error: null
+    });
+  } catch (error) {
+    console.error('FETCH RESUMES ERROR:', error);
+    console.error('Response:', error.response?.data);
+    console.error('Status:', error.response?.status);
+
+    set({
+      error: error.response?.data?.message || 'Failed to load resumes',
+      isLoading: false
+    });
+  }
+},
 
   fetchResume: async (id) => {
     set({ isLoading: true, error: null });

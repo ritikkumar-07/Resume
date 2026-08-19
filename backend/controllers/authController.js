@@ -26,12 +26,10 @@ const issueTokensAndSession = async (user, res, rememberMe = true) => {
     }
   });
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 const cookieOptions = {
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? 'none' : 'lax',
+  secure: true,
+  sameSite: 'none',
   path: '/',
 };
 
@@ -235,17 +233,19 @@ const logout = async (req, res) => {
   } catch (error) {
     console.error('Logout session cleanup error:', error);
   }
-const isProduction = process.env.NODE_ENV === 'production';
-
-const cookieOptions = {
+res.clearCookie('accessToken', {
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? 'none' : 'lax',
+  secure: true,
+  sameSite: 'none',
   path: '/',
-};
+});
 
-res.clearCookie('accessToken', cookieOptions);
-res.clearCookie('refreshToken', cookieOptions);
+res.clearCookie('refreshToken', {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  path: '/',
+});
   res.json({ success: true, message: 'Logged out successfully' });
 };
 
