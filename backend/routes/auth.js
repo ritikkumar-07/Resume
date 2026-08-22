@@ -41,7 +41,7 @@ router.get(
         name: req.user.name,
         avatar: req.user.avatar,
         res,
-        redirectUrl: `${frontUrl}/dashboard`
+        redirectUrl: `${frontUrl}/auth/callback`
       });
     } catch (err) {
       console.error('Google callback error:', err);
