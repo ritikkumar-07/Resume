@@ -7,6 +7,7 @@ import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
 import { useAuthStore } from './store/authStore';
+import OAuthCallback from './pages/OAuthCallback';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -33,6 +34,10 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<AuthPage type="login" />} />
           <Route path="/register" element={<AuthPage type="register" />} />
+          <Route
+            path="/auth/callback"
+            element={<OAuthCallback />}
+          />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/builder/:id?" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
         </Routes>

@@ -49,7 +49,15 @@ res.cookie('refreshToken', refreshToken, {
 };
 
 // Helper for unified OAuth user linking and login
-const handleOAuthLogin = async ({ provider, providerAccountId, email, name, avatar, res, redirectUrl }) => {
+const handleOAuthLogin = async ({
+  provider,
+  providerAccountId,
+  email,
+  name,
+  avatar,
+  res,
+  redirectUrl
+}) => {
   if (!provider || !providerAccountId || !email) {
     return res.status(400).json({
       success: false,
@@ -60,7 +68,6 @@ const handleOAuthLogin = async ({ provider, providerAccountId, email, name, avat
   const normalizedEmail = email.toLowerCase().trim();
   const normalizedAccountId = String(providerAccountId).trim();
 
-  // 1. Check if OAuth account already exists
   let oauthAccount = await prisma.oAuthAccount.findUnique({
     where: {
       provider_providerAccountId: {
@@ -78,13 +85,13 @@ const handleOAuthLogin = async ({ provider, providerAccountId, email, name, avat
   if (oauthAccount) {
     user = oauthAccount.user;
   } else {
-    // 2. Check if user with same verified email exists
     let existingUser = await prisma.user.findUnique({
-      where: { email: normalizedEmail }
+      where: {
+        email: normalizedEmail
+      }
     });
 
     if (existingUser) {
-      // Safely link OAuth account to existing user
       await prisma.oAuthAccount.create({
         data: {
           userId: existingUser.id,
@@ -92,17 +99,26 @@ const handleOAuthLogin = async ({ provider, providerAccountId, email, name, avat
           providerAccountId: normalizedAccountId
         }
       });
+
       user = existingUser;
     } else {
-      // 3. Create a new User and OAuthAccount
-      let baseUsername = normalizedEmail.split('@')[0]
+      let baseUsername = normalizedEmail
+        .split('@')[0]
         .toLowerCase()
         .replace(/[^a-z0-9_]/g, '');
-      if (!baseUsername) baseUsername = 'user';
+
+      if (!baseUsername) {
+        baseUsername = 'user';
+      }
 
       let username = baseUsername;
       let counter = 1;
-      while (await prisma.user.findUnique({ where: { username } })) {
+
+      while (
+        await prisma.user.findUnique({
+          where: { username }
+        })
+      ) {
         username = `${baseUsername}${counter}`;
         counter++;
       }
@@ -125,14 +141,19 @@ const handleOAuthLogin = async ({ provider, providerAccountId, email, name, avat
     }
   }
 
-  await issueTokensAndSession(user, res, true);
+  // Create JWT tokens
+  const tokens = await issueTokensAndSession(user, res, true);
 
+  // OAuth redirect
   if (redirectUrl) {
-    return res.redirect(redirectUrl);
+    return res.redirect(
+      `${redirectUrl}#token=${encodeURIComponent(tokens.accessToken)}`
+    );
   }
 
   return res.json({
     success: true,
+    accessToken: tokens.accessToken,
     user: {
       id: user.id,
       name: user.name,

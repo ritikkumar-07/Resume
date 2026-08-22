@@ -22,23 +22,36 @@ router.post('/microsoft', microsoftAuth);
 // Server-side OAuth redirect routes (passport)
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-router.get('/google/callback', passport.authenticate('google', { session: false }), async (req, res) => {
-  try {
-    const frontUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-    await require('../controllers/authController').handleOAuthLogin({
-      provider: 'google',
-      providerAccountId: req.user.id,
-      email: req.user.email,
-      name: req.user.name,
-      avatar: req.user.avatar,
-      res,
-      redirectUrl: `${frontUrl}/dashboard`
-    });
-  } catch (err) {
-    console.error('Google callback error:', err);
-    res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=oauth');
+router.get(
+  '/google/callback',
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect:
+      `${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=google`
+  }),
+  async (req, res) => {
+    try {
+      const frontUrl =
+        process.env.CLIENT_URL || 'http://localhost:5173';
+
+      await require('../controllers/authController').handleOAuthLogin({
+        provider: 'google',
+        providerAccountId: req.user.id,
+        email: req.user.email,
+        name: req.user.name,
+        avatar: req.user.avatar,
+        res,
+        redirectUrl: `${frontUrl}/dashboard`
+      });
+    } catch (err) {
+      console.error('Google callback error:', err);
+
+      res.redirect(
+        `${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=oauth`
+      );
+    }
   }
-});
+);
 
 router.get('/microsoft', passport.authenticate('azuread-openidconnect'));
 
@@ -52,7 +65,7 @@ router.get('/microsoft/callback', passport.authenticate('azuread-openidconnect',
       name: req.user.name,
       avatar: req.user.avatar,
       res,
-      redirectUrl: `${frontUrl}/dashboard`
+      redirectUrl: `${frontUrl}/auth/callback`
     });
   } catch (err) {
     console.error('Microsoft callback error:', err);

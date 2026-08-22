@@ -1,19 +1,61 @@
+// const jwt = require('jsonwebtoken');
+
+// const requireAuth = (req, res, next) => {
+//   const token = req.cookies.accessToken;
+
+//   if (!token) {
+//     return res.status(401).json({ success: false, message: 'Authentication required' });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+//   }
+// };
+
+// module.exports = { requireAuth };
+
 const jwt = require('jsonwebtoken');
 
 const requireAuth = (req, res, next) => {
-  const token = req.cookies.accessToken;
+  let token = req.cookies.accessToken;
+
+  // Check Authorization header if cookie is unavailable
+  if (!token && req.headers.authorization) {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+  }
 
   if (!token) {
-    return res.status(401).json({ success: false, message: 'Authentication required' });
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required'
+    });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET
+    );
+
     req.user = decoded;
+
     next();
   } catch (error) {
-    return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+    return res.status(403).json({
+      success: false,
+      message: 'Invalid or expired token'
+    });
   }
 };
 
-module.exports = { requireAuth };
+module.exports = {
+  requireAuth
+};
