@@ -12,13 +12,21 @@ const api = axios.create({
 
 // Automatically attach JWT token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
+
+  const token =
+    localStorage.getItem('accessToken');
+
 
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+
+    config.headers.Authorization =
+      `Bearer ${token}`;
+
   }
 
+
   return config;
+
 });
 
 export const useAuthStore = create((set) => ({
@@ -199,39 +207,82 @@ export const useAuthStore = create((set) => ({
   },
 
   // New OAuth callback function
-  completeOAuthLogin: async (token) => {
-    try {
-      localStorage.setItem('accessToken', token);
+completeOAuthLogin: async (token) => {
 
-      const res = await api.get('/auth/me');
+  try {
 
-      set({
-        user: res.data.user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null
-      });
+    // Save token FIRST
+    localStorage.setItem(
+      'accessToken',
+      token
+    );
 
-      return {
-        success: true
-      };
-    } catch (error) {
-      console.error('OAuth completion error:', error);
 
-      localStorage.removeItem('accessToken');
+    console.log(
+      'OAuth token saved, verifying user...'
+    );
 
-      set({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: 'Authentication failed'
-      });
 
-      return {
-        success: false
-      };
-    }
+    // Verify token with backend
+    const res = await api.get('/auth/me');
+
+
+    set({
+
+      user: res.data.user,
+
+      isAuthenticated: true,
+
+      isLoading: false,
+
+      error: null
+
+    });
+
+
+    console.log(
+      'User authenticated:',
+      res.data.user
+    );
+
+
+    return {
+      success: true
+    };
+
+  } catch (error) {
+
+    console.error(
+      'OAuth verification error:',
+      error.response?.data || error
+    );
+
+
+    localStorage.removeItem(
+      'accessToken'
+    );
+
+
+    set({
+
+      user: null,
+
+      isAuthenticated: false,
+
+      isLoading: false,
+
+      error: 'Authentication failed'
+
+    });
+
+
+    return {
+      success: false
+    };
+
   }
+
+}
 }));
 
 export { api };
