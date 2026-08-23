@@ -109,6 +109,7 @@ import {
   PenLine,
   FileDown
 } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 
 export default function Landing() {
   const features = [
@@ -131,7 +132,7 @@ export default function Landing() {
         'Create a polished resume and export it when you are ready.'
     }
   ];
-
+  const { isAuthenticated } = useAuthStore();
   return (
     <div className="overflow-hidden">
 
@@ -195,7 +196,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
 
               <Link
-                to="/register"
+                to={isAuthenticated ? "/builder" : "/register"}
                 className="w-full sm:w-auto px-8 py-4 bg-[#2F2B28] text-white rounded-xl font-semibold text-lg hover:bg-black transition-all shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2"
               >
 
@@ -758,7 +759,7 @@ export default function Landing() {
           </p>
 
           <Link
-            to="/register"
+            to={isAuthenticated ? "/builder" : "/register"}
             className="inline-flex items-center gap-2 mt-8 bg-white text-[#2F2B28] px-7 py-4 rounded-xl font-bold hover:scale-105 transition-transform"
           >
 

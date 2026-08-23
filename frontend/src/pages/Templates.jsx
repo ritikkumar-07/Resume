@@ -11,6 +11,7 @@ import {
   Briefcase,
   Palette
 } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 
 const templates = [
   {
@@ -342,13 +343,13 @@ export default function Templates() {
             represents your professional style.
           </p>
 
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 bg-white text-[#2F2B28] px-7 py-4 rounded-xl font-bold hover:scale-105 transition-transform"
-          >
-            Create My Resume
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+            <Link
+              to={isAuthenticated ? "/builder" : "/register"}
+              className="inline-flex items-center gap-2 bg-white text-[#2F2B28] px-7 py-4 rounded-xl font-bold hover:bg-cream-100 transition-all"
+            >
+              Create My Resume
+              <ArrowRight className="w-5 h-5" />
+            </Link>
 
         </div>
       </section>
