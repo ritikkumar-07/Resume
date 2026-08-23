@@ -8,7 +8,7 @@ import {
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-
+import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
 import Templates from './pages/Templates';
 import AuthPage from './pages/AuthPage';
@@ -61,7 +61,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-cream-50 font-sans text-cream-900">
-
+      <ScrollToTop />
       <Navbar />
 
       <main className="flex-grow flex flex-col">
@@ -125,6 +125,12 @@ export default function App() {
                 <Builder />
               </ProtectedRoute>
             }
+          />
+
+          {/* Invalid URL redirect */}
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
           />
 
         </Routes>
