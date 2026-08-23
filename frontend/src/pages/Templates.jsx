@@ -188,9 +188,13 @@ function ResumePreview({ template }) {
 
 export default function Templates() {
   const navigate = useNavigate();
-
+  const { isAuthenticated } = useAuthStore();
   const handleUseTemplate = (templateId) => {
-    navigate(`/register?template=${templateId}`);
+    if (isAuthenticated) {
+      navigate(`/builder?template=${templateId}`);
+    } else {
+      navigate(`/register?template=${templateId}`);
+    }
   };
 
   return (
