@@ -123,6 +123,7 @@ export default function Builder() {
   const [template, setTemplate] = useState('Minimal');
   const [activeTab, setActiveTab] = useState('edit');
   const [saveStatus, setSaveStatus] = useState('Saved');
+  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
   const [open, setOpen] = useState({ personal: true, skills: true, education: true, projects: true, experience: false, positions: false, achievements: false });
   const previewRef = useRef(null);
 
@@ -332,9 +333,11 @@ const downloadPDF = async () => {
     });
 
     // Add high-resolution crisp image (PNG for lossless text & icon sharpness)
+    const imageData = canvas.toDataURL('image/jpeg', 0.95);
+      
     pdf.addImage(
-      canvas.toDataURL('image/png'),
-      'PNG',
+      imageData,
+      'JPEG',
       0,
       0,
       A4_WIDTH,
@@ -642,7 +645,76 @@ const downloadDocx = async () => {
   Preview
 </button>
       </div>
-      <div className="toolbar-right"><select value={template} onChange={(e) => setTemplate(e.target.value)}><option value="Minimal">Classic ATS</option><option value="Executive">Executive</option><option value="ModernCreative">Modern Creative</option></select><div className="download-group"><button type="button" className="primary-download"><Download size={16} /> Download</button><div className="download-menu"><button onClick={downloadPDF}><FileText size={15} /> PDF Document</button><button onClick={downloadDocx}><FileText size={15} /> Word Document</button></div></div></div>
+      <div className="toolbar-right"><select value={template} onChange={(e) => setTemplate(e.target.value)}><option value="Minimal">Classic ATS</option><option value="Executive">Executive</option><option value="ModernCreative">Modern Creative</option></select>
+      {/* <div className="download-group">
+        <button type="button" className="primary-download">
+          <Download size={16} /> Download
+        </button>
+        <div className="download-menu">
+          <button onClick={downloadPDF}><FileText size={15} /> PDF Document</button>
+          <button onClick={downloadDocx}><FileText size={15} /> Word Document</button>
+        </div>
+        </div> */}
+
+        <div className="download-group">
+
+          <button
+            type="button"
+            className="primary-download"
+            onClick={() =>
+              setIsDownloadMenuOpen((prev) => !prev)
+            }
+          >
+            <Download size={16} />
+            Download
+          </button>
+          
+          {isDownloadMenuOpen && (
+            <div className="download-menu open">
+            
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDownloadMenuOpen(false);
+                  downloadPDF();
+                }}
+              >
+                <FileText size={17} />
+              
+                <span>
+                  <strong>PDF Document</strong>
+                  {/* <small>
+                    Best for sharing and printing
+                  </small> */}
+                </span>
+              
+              </button>
+              
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDownloadMenuOpen(false);
+                  downloadDocx();
+                }}
+              >
+                <FileText size={17} />
+              
+                <span>
+                  <strong>Word Document</strong>
+                  {/* <small>
+                    Editable DOCX format
+                  </small> */}
+                </span>
+              
+              </button>
+              
+            </div>
+          )}
+
+        </div>
+
+        </div>
     </header>
 
     {/* Mobile Edit / Preview Switcher */}
