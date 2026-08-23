@@ -10,11 +10,15 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 import Landing from './pages/Landing';
+import Templates from './pages/Templates';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
 import OAuthCallback from './pages/OAuthCallback';
 
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import About from './pages/About';
 import { useAuthStore } from './store/authStore';
 
 
@@ -67,6 +71,26 @@ export default function App() {
           <Route
             path="/"
             element={<Landing />}
+          />
+
+          <Route
+            path="/templates"
+            element={<Templates />}
+          />
+
+          <Route
+            path="/privacy"
+            element={<PrivacyPolicy />}
+          />
+          
+          <Route
+            path="/terms"
+            element={<TermsOfService />}
+          />
+
+          <Route
+            path="/about"
+            element={<About />}
           />
 
           <Route

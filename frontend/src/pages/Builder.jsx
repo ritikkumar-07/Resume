@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Download, Eye, FileText, GripVertical, Loader2, Plus, Save,
-  Trash2, ChevronDown, ChevronUp, X
+  Trash2, ChevronDown, ChevronUp, X, Edit3
 } from 'lucide-react';
 // import html2pdf from 'html2pdf.js';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
@@ -644,6 +644,27 @@ const downloadDocx = async () => {
       </div>
       <div className="toolbar-right"><select value={template} onChange={(e) => setTemplate(e.target.value)}><option value="Minimal">Classic ATS</option><option value="Executive">Executive</option><option value="ModernCreative">Modern Creative</option></select><div className="download-group"><button type="button" className="primary-download"><Download size={16} /> Download</button><div className="download-menu"><button onClick={downloadPDF}><FileText size={15} /> PDF Document</button><button onClick={downloadDocx}><FileText size={15} /> Word Document</button></div></div></div>
     </header>
+
+    {/* Mobile Edit / Preview Switcher */}
+<div className="mobile-builder-tabs">
+  <button
+    type="button"
+    className={activeTab === 'edit' ? 'active' : ''}
+    onClick={() => setActiveTab('edit')}
+  >
+    <Edit3 size={18} />
+    Edit
+  </button>
+
+  <button
+    type="button"
+    className={activeTab === 'preview' ? 'active' : ''}
+    onClick={handlePreview}
+  >
+    <Eye size={18} />
+    Preview
+  </button>
+</div>
 
     <div className="builder-workspace">
       <aside className={`builder-editor ${activeTab === 'edit' ? 'mobile-visible' : ''}`}>

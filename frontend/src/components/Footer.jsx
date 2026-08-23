@@ -94,12 +94,12 @@ export default function Footer() {
             <ul className="space-y-4">
 
               <li>
-                <a
-                  href="/#about"
+                <Link
+                  to="/about"
                   className="text-sm text-[#514B47] hover:text-black transition-colors"
                 >
                   About
-                </a>
+                </Link>
               </li>
 
               <li>
@@ -113,7 +113,7 @@ export default function Footer() {
 
               <li>
                 <a
-                  href="/#contact"
+                  href="mailto:hritikkrgupta7746@gmail.com"
                   className="text-sm text-[#514B47] hover:text-black transition-colors"
                 >
                   Contact
