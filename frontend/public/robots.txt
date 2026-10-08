@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /auth/callback
+Disallow: /dashboard
+Disallow: /builder
+Disallow: /forgot-password
+
+Sitemap: https://resumora-pearl.vercel.app/sitemap.xml
